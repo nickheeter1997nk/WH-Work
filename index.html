@@ -3,246 +3,211 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ntrust-2 Site Enrollment Map</title>
+<title>Nkarta Site Enrollment Map</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #0d1117;
-    color: #e6edf3;
-    min-height: 100vh;
-    padding: 24px;
-  }
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
-  header {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #e6edf3;
-    letter-spacing: -0.3px;
-  }
-  header span {
-    font-size: 12px;
-    color: #7d8590;
-    font-family: 'DM Mono', monospace;
-  }
-  .stats {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  .stat-card {
-    background: #161b22;
-    border: 0.5px solid #30363d;
-    border-radius: 10px;
-    padding: 12px 16px;
-    min-width: 100px;
-  }
-  .stat-card .label {
-    font-size: 11px;
-    color: #7d8590;
-    margin-bottom: 4px;
-    font-family: 'DM Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .stat-card .value {
-    font-size: 22px;
-    font-weight: 600;
-    color: #e6edf3;
-  }
-  .map-wrap {
-    background: #161b22;
-    border: 0.5px solid #30363d;
-    border-radius: 12px;
-    padding: 16px;
-    position: relative;
-  }
-  #map svg { display: block; width: 100%; }
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 0.5px solid #30363d;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #7d8590;
-  }
-  .legend-swatch {
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
-  #tooltip {
-    position: fixed;
-    pointer-events: none;
-    opacity: 0;
-    background: #1c2128;
-    border: 0.5px solid #30363d;
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 13px;
-    min-width: 190px;
-    z-index: 100;
-    transition: opacity 0.12s;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  .tt-site { font-weight: 600; font-size: 13px; color: #e6edf3; margin-bottom: 4px; }
-  .tt-city { font-size: 11px; color: #7d8590; margin-bottom: 10px; font-family: 'DM Mono', monospace; }
-  .tt-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
-  .tt-swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-  .tt-ind { color: #7d8590; font-size: 12px; flex: 1; }
-  .tt-count { font-weight: 600; font-size: 12px; color: #e6edf3; }
-  .tt-total { border-top: 0.5px solid #30363d; margin-top: 7px; padding-top: 7px; font-size: 12px; color: #7d8590; }
-  .tt-total strong { color: #e6edf3; }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'IBM Plex Sans',sans-serif; background:#0a0e17; color:#e2e8f0; min-height:100vh; padding:20px; }
+  header { margin-bottom:16px; }
+  header h1 { font-size:18px; font-weight:600; color:#f0f4ff; letter-spacing:-0.3px; }
+  header p { font-size:12px; color:#64748b; font-family:'IBM Plex Mono',monospace; margin-top:3px; }
+  .stats { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .stat { background:#111827; border:0.5px solid #1e293b; border-radius:8px; padding:10px 14px; }
+  .stat .lbl { font-size:10px; color:#64748b; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:3px; }
+  .stat .val { font-size:20px; font-weight:600; color:#f0f4ff; }
+  .controls { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .btn { background:#111827; border:0.5px solid #1e293b; border-radius:6px; padding:6px 14px; font-size:12px; color:#94a3b8; cursor:pointer; transition:all .15s; font-family:'IBM Plex Sans',sans-serif; }
+  .btn:hover { border-color:#334155; color:#e2e8f0; }
+  .btn.active { background:#1e3a5f; border-color:#2563eb; color:#93c5fd; }
+  .map-wrap { background:#111827; border:0.5px solid #1e293b; border-radius:12px; padding:12px; position:relative; }
+  #map svg { display:block; width:100%; }
+  .legend { display:flex; flex-wrap:wrap; gap:20px; margin-top:12px; padding-top:12px; border-top:0.5px solid #1e293b; }
+  .legend-group { display:flex; flex-direction:column; gap:5px; }
+  .legend-title { font-size:10px; color:#475569; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+  .legend-row { display:flex; align-items:center; gap:6px; font-size:11px; color:#64748b; }
+  .legend-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+  .legend-circle { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+  #tooltip { position:fixed; pointer-events:none; opacity:0; background:#1e293b; border:0.5px solid #334155; border-radius:10px; padding:12px 14px; font-size:12px; min-width:200px; z-index:100; transition:opacity .12s; box-shadow:0 8px 32px rgba(0,0,0,0.6); }
+  .tt-site { font-weight:600; font-size:13px; color:#f0f4ff; margin-bottom:2px; }
+  .tt-city { font-size:11px; color:#64748b; font-family:'IBM Plex Mono',monospace; margin-bottom:8px; }
+  .tt-badge { font-size:10px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; padding:2px 7px; border-radius:4px; display:inline-block; }
+  .tt-n1 { background:#0f2e1a; color:#4ade80; border:0.5px solid #166534; }
+  .tt-n2 { background:#0f1f3a; color:#60a5fa; border:0.5px solid #1d4ed8; }
+  .tt-both { background:#1f0f3a; color:#c084fc; border:0.5px solid #7c3aed; }
+  .tt-row { display:flex; align-items:center; gap:7px; margin-bottom:4px; }
+  .tt-swatch { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+  .tt-ind { color:#94a3b8; font-size:12px; flex:1; }
+  .tt-count { font-weight:600; font-size:12px; color:#f0f4ff; }
+  .tt-divider { border-top:0.5px solid #334155; margin:6px 0; }
+  .tt-total { font-size:11px; color:#64748b; }
+  .tt-total strong { color:#f0f4ff; }
 </style>
 </head>
 <body>
-
 <header>
-  <h1>Ntrust-2 Site Enrollment</h1>
-  <span>hover sites for indication breakdown</span>
+  <h1>Nkarta Clinical Site Enrollment Map</h1>
+  <p>Ntrust-1 (N1) &nbsp;·&nbsp; Ntrust-2 (N2) &nbsp;·&nbsp; hover sites for breakdown</p>
 </header>
-
 <div class="stats">
-  <div class="stat-card"><div class="label">Total Enrolled</div><div class="value">25</div></div>
-  <div class="stat-card"><div class="label">Active Sites</div><div class="value">8</div></div>
-  <div class="stat-card"><div class="label">Indications</div><div class="value">3</div></div>
+  <div class="stat"><div class="lbl">N1 Enrolled</div><div class="val">7</div></div>
+  <div class="stat"><div class="lbl">N2 Enrolled</div><div class="val">25</div></div>
+  <div class="stat"><div class="lbl">Total Sites</div><div class="val">12</div></div>
+  <div class="stat"><div class="lbl">States</div><div class="val">10</div></div>
 </div>
-
+<div class="controls">
+  <button class="btn active" onclick="setFilter('all',this)">All Sites</button>
+  <button class="btn" onclick="setFilter('N1',this)">Ntrust-1 Only</button>
+  <button class="btn" onclick="setFilter('N2',this)">Ntrust-2 Only</button>
+</div>
 <div class="map-wrap">
   <div id="map"></div>
   <div class="legend">
-    <div class="legend-item"><div class="legend-swatch" style="background:#378ADD;"></div>SSc</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:#1D9E75;"></div>IIM</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:#D85A30;"></div>AAV</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:#7F77DD;"></div>LN</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:#D4537E;"></div>pMN</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:#BA7517;"></div>SLE</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:#639922;"></div>RA</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:#888780;"></div>MG</div>
+    <div class="legend-group">
+      <div class="legend-title">Indications</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#378ADD;"></div>SSc</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#1D9E75;"></div>IIM</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#D85A30;"></div>AAV</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#7F77DD;"></div>LN</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#D4537E;"></div>pMN</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#BA7517;"></div>SLE</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#639922;"></div>RA</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:#888780;"></div>MG</div>
+    </div>
+    <div class="legend-group" style="margin-left:8px;">
+      <div class="legend-title">Study Ring</div>
+      <div class="legend-row"><div class="legend-circle" style="border:2px solid #4ade80;background:transparent;"></div>Ntrust-1</div>
+      <div class="legend-row"><div class="legend-circle" style="border:2px solid #60a5fa;background:transparent;"></div>Ntrust-2</div>
+      <div class="legend-row"><div class="legend-circle" style="border:2px solid #c084fc;background:transparent;"></div>Both</div>
+    </div>
+    <div class="legend-group" style="margin-left:8px;">
+      <div class="legend-title">Bubble Size</div>
+      <svg width="60" height="30" style="margin-top:4px;">
+        <circle cx="10" cy="15" r="7" fill="none" stroke="#475569" stroke-width="1"/>
+        <circle cx="40" cy="15" r="12" fill="none" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="29" text-anchor="middle" font-size="8" fill="#475569">sm</text>
+        <text x="40" y="29" text-anchor="middle" font-size="8" fill="#475569">lg</text>
+      </svg>
+      <div style="font-size:10px;color:#475569;margin-top:2px;">= total enrolled</div>
+    </div>
   </div>
 </div>
-
 <div id="tooltip"></div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
+const indColors = { SSc:'#378ADD', IIM:'#1D9E75', AAV:'#D85A30', LN:'#7F77DD', pMN:'#D4537E', SLE:'#BA7517', RA:'#639922', MG:'#888780' };
+
 const sites = [
-  { name:'IRIS (Valenzuela, 1029)', lat:33.4484, lon:-112.0740, city:'Phoenix, AZ',       indications:{ SSc:5, IIM:4, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
-  { name:'U Michigan (Khanna, 1008)', lat:42.2808, lon:-83.7430, city:'Ann Arbor, MI',    indications:{ SSc:3, IIM:0, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
-  { name:'KUMC (Dimachkie, 1003)', lat:39.0489, lon:-94.5785, city:'Kansas City, KS',     indications:{ SSc:0, IIM:2, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
-  { name:'SW Rheum (Singhal, 1018)', lat:32.7767, lon:-96.7970, city:'Dallas, TX',        indications:{ SSc:0, IIM:2, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
-  { name:'Hackensack (Broder, 1002)', lat:40.8860, lon:-74.0435, city:'Hackensack, NJ',   indications:{ SSc:1, IIM:0, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
-  { name:'Baylor (Vaseer, 1030)', lat:29.7604, lon:-95.3698, city:'Houston, TX',          indications:{ SSc:2, IIM:0, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
-  { name:'OSU (Paul, 1010)', lat:40.0007, lon:-83.0210, city:'Columbus, OH',              indications:{ SSc:0, IIM:1, AAV:1, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
-  { name:'U Minnesota (Pearson, 1015)', lat:44.9778, lon:-93.2650, city:'Minneapolis, MN',indications:{ SSc:0, IIM:2, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'IRIS (Valenzuela, 1029)', lat:26.1223, lon:-80.1734, city:'Plantation, FL', studies:['N2'], N2:{SSc:5,IIM:4} },
+  { name:'U Michigan (Khanna, 1008)', lat:42.2808, lon:-83.7430, city:'Ann Arbor, MI', studies:['N2'], N2:{SSc:3} },
+  { name:'U Michigan (Madison, 1015)', lat:42.3808, lon:-83.8430, city:'Ann Arbor, MI', studies:['N1'], N1:{LN:1} },
+  { name:'KUMC (Dimachkie, 1003)', lat:39.0489, lon:-94.5785, city:'Kansas City, KS', studies:['N2'], N2:{IIM:2} },
+  { name:'SW Rheum (Singhal, 1018)', lat:32.7735, lon:-96.5991, city:'Mesquite, TX', studies:['N2'], N2:{IIM:2} },
+  { name:'Hackensack (Broder, 1002)', lat:40.8860, lon:-74.0435, city:'Hackensack, NJ', studies:['N2'], N2:{SSc:1} },
+  { name:'Baylor (Vaseer, 1030)', lat:32.7767, lon:-96.7970, city:'Dallas, TX', studies:['N2'], N2:{SSc:2} },
+  { name:'OSU (Paul, 1010)', lat:40.0007, lon:-83.0210, city:'Columbus, OH', studies:['N2'], N2:{IIM:1,AAV:1} },
+  { name:'U Minnesota (Pearson, 1015)', lat:44.9778, lon:-93.2650, city:'Minneapolis, MN', studies:['N2'], N2:{IIM:2} },
+  { name:'Emory (Khosroshahi, 1003)', lat:33.7939, lon:-84.3234, city:'Atlanta, GA', studies:['N1'], N1:{LN:2} },
+  { name:'NYU (Saxena, 1005)', lat:40.7423, lon:-73.9751, city:'New York, NY', studies:['N1'], N1:{LN:3} },
+  { name:'Stony Brook (Yao, 1010)', lat:40.9176, lon:-73.1232, city:'Stony Brook, NY', studies:['N1'], N1:{LN:1} },
+  { name:'U Arkansas (Dalvi, 1009)', lat:34.7465, lon:-92.3408, city:'Little Rock, AR', studies:['N1'], N1:{LN:1} },
 ];
 
-const indicationColors = {
-  SSc:'#378ADD', IIM:'#1D9E75', AAV:'#D85A30',
-  LN:'#7F77DD', pMN:'#D4537E', SLE:'#BA7517', RA:'#639922', MG:'#888780'
-};
-
 const tooltip = document.getElementById('tooltip');
-const width = 900, height = 520;
+let currentFilter = 'all';
+let bubblesGroup;
 
-const svg = d3.select('#map').append('svg')
-  .attr('viewBox', `0 0 ${width} ${height}`)
-  .attr('width', '100%');
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  drawBubbles();
+}
 
-const projection = d3.geoAlbersUsa().scale(1060).translate([width/2, height/2]);
+function getEntries(site) {
+  const m = {};
+  if ((currentFilter==='all'||currentFilter==='N1') && site.N1) Object.entries(site.N1).forEach(([k,v])=>m[k]=(m[k]||0)+v);
+  if ((currentFilter==='all'||currentFilter==='N2') && site.N2) Object.entries(site.N2).forEach(([k,v])=>m[k]=(m[k]||0)+v);
+  return Object.entries(m).filter(([,v])=>v>0);
+}
+
+function getLabel(site) {
+  const n1 = site.N1 && (currentFilter==='all'||currentFilter==='N1');
+  const n2 = site.N2 && (currentFilter==='all'||currentFilter==='N2');
+  if (n1&&n2) return 'both';
+  if (n1) return 'N1';
+  return 'N2';
+}
+
+function ringColor(l) { return l==='N1'?'#4ade80':l==='N2'?'#60a5fa':'#c084fc'; }
+
+const width=960, height=560;
+const svg = d3.select('#map').append('svg').attr('viewBox',`0 0 ${width} ${height}`).attr('width','100%');
+const projection = d3.geoAlbersUsa().scale(1100).translate([width/2, height/2+20]);
 const path = d3.geoPath(projection);
 
 d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(us => {
-  svg.selectAll('path')
-    .data(topojson.feature(us, us.objects.states).features)
-    .join('path')
-    .attr('d', path)
-    .attr('fill', '#1c2128')
-    .attr('stroke', '#30363d')
-    .attr('stroke-width', 0.8);
+  svg.append('g').selectAll('path')
+    .data(topojson.feature(us,us.objects.states).features).join('path')
+    .attr('d',path).attr('fill','#141c2e').attr('stroke','#1e293b').attr('stroke-width',0.8);
+  svg.append('path').datum(topojson.mesh(us,us.objects.states,(a,b)=>a!==b))
+    .attr('d',path).attr('fill','none').attr('stroke','#263248').attr('stroke-width',0.5);
+  bubblesGroup = svg.append('g');
+  drawBubbles();
+});
 
+function drawBubbles() {
+  if (!bubblesGroup) return;
+  bubblesGroup.selectAll('*').remove();
   sites.forEach(site => {
+    const entries = getEntries(site);
+    if (!entries.length) return;
+    const total = entries.reduce((a,[,v])=>a+v,0);
+    if (!total) return;
     const coords = projection([site.lon, site.lat]);
     if (!coords) return;
-    const [x, y] = coords;
-    const indEntries = Object.entries(site.indications).filter(([,v])=>v>0);
-    if (!indEntries.length) return;
-    const total = indEntries.reduce((a,[,v])=>a+v, 0);
-    const r = Math.max(14, Math.sqrt(total) * 10);
+    const [x,y] = coords;
+    const r = Math.max(13, Math.sqrt(total)*10);
+    const label = getLabel(site);
+    const g = bubblesGroup.append('g').style('cursor','pointer');
 
-    const g = svg.append('g').style('cursor','pointer');
-
-    if (indEntries.length === 1) {
-      g.append('circle')
-        .attr('cx', x).attr('cy', y).attr('r', r)
-        .attr('fill', indicationColors[indEntries[0][0]])
-        .attr('opacity', 0.9)
-        .attr('stroke', '#0d1117')
-        .attr('stroke-width', 1.5);
+    if (entries.length===1) {
+      g.append('circle').attr('cx',x).attr('cy',y).attr('r',r)
+        .attr('fill',indColors[entries[0][0]]).attr('opacity',0.88);
     } else {
-      let startAngle = -Math.PI / 2;
+      let sa = -Math.PI/2;
       const arc = d3.arc().innerRadius(0).outerRadius(r);
-      indEntries.forEach(([ind, count]) => {
-        const slice = (count / total) * 2 * Math.PI;
-        g.append('path')
-          .attr('d', arc({ startAngle, endAngle: startAngle + slice }))
-          .attr('transform', `translate(${x},${y})`)
-          .attr('fill', indicationColors[ind])
-          .attr('opacity', 0.9)
-          .attr('stroke', '#0d1117')
-          .attr('stroke-width', 0.5);
-        startAngle += slice;
+      entries.forEach(([ind,count]) => {
+        const sl = (count/total)*2*Math.PI;
+        g.append('path').attr('d',arc({startAngle:sa,endAngle:sa+sl}))
+          .attr('transform',`translate(${x},${y})`)
+          .attr('fill',indColors[ind]).attr('opacity',0.88)
+          .attr('stroke','#0a0e17').attr('stroke-width',0.5);
+        sa+=sl;
       });
-      g.append('circle')
-        .attr('cx', x).attr('cy', y).attr('r', r)
-        .attr('fill', 'none')
-        .attr('stroke', '#0d1117')
-        .attr('stroke-width', 1.5);
     }
-
-    g.append('text')
-      .attr('x', x).attr('y', y)
+    g.append('circle').attr('cx',x).attr('cy',y).attr('r',r)
+      .attr('fill','none').attr('stroke',ringColor(label)).attr('stroke-width',2);
+    g.append('text').attr('x',x).attr('y',y)
       .attr('text-anchor','middle').attr('dominant-baseline','middle')
-      .attr('font-size', Math.max(10, r * 0.52))
-      .attr('font-weight', '600')
-      .attr('fill', '#fff')
-      .attr('pointer-events','none')
-      .text(total);
+      .attr('font-size',Math.max(9,r*0.5)).attr('font-weight','600')
+      .attr('fill','#fff').attr('pointer-events','none').text(total);
 
     g.on('mousemove', (event) => {
-      let html = `<div class="tt-site">${site.name}</div>`;
-      html += `<div class="tt-city">${site.city}</div>`;
-      indEntries.forEach(([ind, count]) => {
-        html += `<div class="tt-row">
-          <div class="tt-swatch" style="background:${indicationColors[ind]};"></div>
-          <span class="tt-ind">${ind}</span>
-          <span class="tt-count">${count}</span>
-        </div>`;
+      const bc = label==='both'?'tt-both':label==='N1'?'tt-n1':'tt-n2';
+      const bt = label==='both'?'N1 + N2':`Ntrust-${label.slice(1)}`;
+      let h = `<div class="tt-site">${site.name}</div><div class="tt-city">${site.city}</div>`;
+      h += `<span class="tt-badge ${bc}">${bt}</span><div class="tt-divider"></div>`;
+      entries.forEach(([ind,count]) => {
+        h+=`<div class="tt-row"><div class="tt-swatch" style="background:${indColors[ind]};"></div><span class="tt-ind">${ind}</span><span class="tt-count">${count}</span></div>`;
       });
-      html += `<div class="tt-total">Total enrolled: <strong>${total}</strong></div>`;
-      tooltip.innerHTML = html;
-      tooltip.style.opacity = '1';
-      tooltip.style.left = (event.clientX + 16) + 'px';
-      tooltip.style.top = (event.clientY - 10) + 'px';
-    }).on('mouseleave', () => { tooltip.style.opacity = '0'; });
+      h+=`<div class="tt-divider"></div><div class="tt-total">Total enrolled: <strong>${total}</strong></div>`;
+      tooltip.innerHTML=h; tooltip.style.opacity='1';
+      const tx = event.clientX+18>window.innerWidth-220 ? event.clientX-220 : event.clientX+18;
+      tooltip.style.left=tx+'px'; tooltip.style.top=(event.clientY-10)+'px';
+    }).on('mouseleave',()=>{ tooltip.style.opacity='0'; });
   });
-});
+}
 </script>
 </body>
 </html>

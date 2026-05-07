@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ntrust-2 Site Enrollment Map</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #e6edf3;
+    letter-spacing: -0.3px;
+  }
+  header span {
+    font-size: 12px;
+    color: #7d8590;
+    font-family: 'DM Mono', monospace;
+  }
+  .stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: #161b22;
+    border: 0.5px solid #30363d;
+    border-radius: 10px;
+    padding: 12px 16px;
+    min-width: 100px;
+  }
+  .stat-card .label {
+    font-size: 11px;
+    color: #7d8590;
+    margin-bottom: 4px;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-card .value {
+    font-size: 22px;
+    font-weight: 600;
+    color: #e6edf3;
+  }
+  .map-wrap {
+    background: #161b22;
+    border: 0.5px solid #30363d;
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+  }
+  #map svg { display: block; width: 100%; }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 0.5px solid #30363d;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #7d8590;
+  }
+  .legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  #tooltip {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    background: #1c2128;
+    border: 0.5px solid #30363d;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    min-width: 190px;
+    z-index: 100;
+    transition: opacity 0.12s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .tt-site { font-weight: 600; font-size: 13px; color: #e6edf3; margin-bottom: 4px; }
+  .tt-city { font-size: 11px; color: #7d8590; margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+  .tt-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+  .tt-swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .tt-ind { color: #7d8590; font-size: 12px; flex: 1; }
+  .tt-count { font-weight: 600; font-size: 12px; color: #e6edf3; }
+  .tt-total { border-top: 0.5px solid #30363d; margin-top: 7px; padding-top: 7px; font-size: 12px; color: #7d8590; }
+  .tt-total strong { color: #e6edf3; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ntrust-2 Site Enrollment</h1>
+  <span>hover sites for indication breakdown</span>
+</header>
+
+<div class="stats">
+  <div class="stat-card"><div class="label">Total Enrolled</div><div class="value">25</div></div>
+  <div class="stat-card"><div class="label">Active Sites</div><div class="value">8</div></div>
+  <div class="stat-card"><div class="label">Indications</div><div class="value">3</div></div>
+</div>
+
+<div class="map-wrap">
+  <div id="map"></div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:#378ADD;"></div>SSc</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1D9E75;"></div>IIM</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#D85A30;"></div>AAV</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#7F77DD;"></div>LN</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#D4537E;"></div>pMN</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#BA7517;"></div>SLE</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#639922;"></div>RA</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#888780;"></div>MG</div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const sites = [
+  { name:'IRIS (Valenzuela, 1029)', lat:33.4484, lon:-112.0740, city:'Phoenix, AZ',       indications:{ SSc:5, IIM:4, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'U Michigan (Khanna, 1008)', lat:42.2808, lon:-83.7430, city:'Ann Arbor, MI',    indications:{ SSc:3, IIM:0, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'KUMC (Dimachkie, 1003)', lat:39.0489, lon:-94.5785, city:'Kansas City, KS',     indications:{ SSc:0, IIM:2, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'SW Rheum (Singhal, 1018)', lat:32.7767, lon:-96.7970, city:'Dallas, TX',        indications:{ SSc:0, IIM:2, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'Hackensack (Broder, 1002)', lat:40.8860, lon:-74.0435, city:'Hackensack, NJ',   indications:{ SSc:1, IIM:0, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'Baylor (Vaseer, 1030)', lat:29.7604, lon:-95.3698, city:'Houston, TX',          indications:{ SSc:2, IIM:0, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'OSU (Paul, 1010)', lat:40.0007, lon:-83.0210, city:'Columbus, OH',              indications:{ SSc:0, IIM:1, AAV:1, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+  { name:'U Minnesota (Pearson, 1015)', lat:44.9778, lon:-93.2650, city:'Minneapolis, MN',indications:{ SSc:0, IIM:2, AAV:0, LN:0, pMN:0, SLE:0, RA:0, MG:0 } },
+];
+
+const indicationColors = {
+  SSc:'#378ADD', IIM:'#1D9E75', AAV:'#D85A30',
+  LN:'#7F77DD', pMN:'#D4537E', SLE:'#BA7517', RA:'#639922', MG:'#888780'
+};
+
+const tooltip = document.getElementById('tooltip');
+const width = 900, height = 520;
+
+const svg = d3.select('#map').append('svg')
+  .attr('viewBox', `0 0 ${width} ${height}`)
+  .attr('width', '100%');
+
+const projection = d3.geoAlbersUsa().scale(1060).translate([width/2, height/2]);
+const path = d3.geoPath(projection);
+
+d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(us => {
+  svg.selectAll('path')
+    .data(topojson.feature(us, us.objects.states).features)
+    .join('path')
+    .attr('d', path)
+    .attr('fill', '#1c2128')
+    .attr('stroke', '#30363d')
+    .attr('stroke-width', 0.8);
+
+  sites.forEach(site => {
+    const coords = projection([site.lon, site.lat]);
+    if (!coords) return;
+    const [x, y] = coords;
+    const indEntries = Object.entries(site.indications).filter(([,v])=>v>0);
+    if (!indEntries.length) return;
+    const total = indEntries.reduce((a,[,v])=>a+v, 0);
+    const r = Math.max(14, Math.sqrt(total) * 10);
+
+    const g = svg.append('g').style('cursor','pointer');
+
+    if (indEntries.length === 1) {
+      g.append('circle')
+        .attr('cx', x).attr('cy', y).attr('r', r)
+        .attr('fill', indicationColors[indEntries[0][0]])
+        .attr('opacity', 0.9)
+        .attr('stroke', '#0d1117')
+        .attr('stroke-width', 1.5);
+    } else {
+      let startAngle = -Math.PI / 2;
+      const arc = d3.arc().innerRadius(0).outerRadius(r);
+      indEntries.forEach(([ind, count]) => {
+        const slice = (count / total) * 2 * Math.PI;
+        g.append('path')
+          .attr('d', arc({ startAngle, endAngle: startAngle + slice }))
+          .attr('transform', `translate(${x},${y})`)
+          .attr('fill', indicationColors[ind])
+          .attr('opacity', 0.9)
+          .attr('stroke', '#0d1117')
+          .attr('stroke-width', 0.5);
+        startAngle += slice;
+      });
+      g.append('circle')
+        .attr('cx', x).attr('cy', y).attr('r', r)
+        .attr('fill', 'none')
+        .attr('stroke', '#0d1117')
+        .attr('stroke-width', 1.5);
+    }
+
+    g.append('text')
+      .attr('x', x).attr('y', y)
+      .attr('text-anchor','middle').attr('dominant-baseline','middle')
+      .attr('font-size', Math.max(10, r * 0.52))
+      .attr('font-weight', '600')
+      .attr('fill', '#fff')
+      .attr('pointer-events','none')
+      .text(total);
+
+    g.on('mousemove', (event) => {
+      let html = `<div class="tt-site">${site.name}</div>`;
+      html += `<div class="tt-city">${site.city}</div>`;
+      indEntries.forEach(([ind, count]) => {
+        html += `<div class="tt-row">
+          <div class="tt-swatch" style="background:${indicationColors[ind]};"></div>
+          <span class="tt-ind">${ind}</span>
+          <span class="tt-count">${count}</span>
+        </div>`;
+      });
+      html += `<div class="tt-total">Total enrolled: <strong>${total}</strong></div>`;
+      tooltip.innerHTML = html;
+      tooltip.style.opacity = '1';
+      tooltip.style.left = (event.clientX + 16) + 'px';
+      tooltip.style.top = (event.clientY - 10) + 'px';
+    }).on('mouseleave', () => { tooltip.style.opacity = '0'; });
+  });
+});
+</script>
+</body>
+</html>
